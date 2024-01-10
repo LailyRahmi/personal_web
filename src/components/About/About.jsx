@@ -1,27 +1,66 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./About.module.css";
 
 export const About = () => {
-  const [editedText, setEditedText] = useState(""); // State untuk menyimpan teks yang diubah
+  const [editedText, setEditedText] = useState("");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch("http://localhost/personal-website/src/components/About/editParagraf.php", {
+          method: "GET",
+          mode: "no-cors",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+
+        const responseData = await response.json();
+
+        if (responseData.status === "success") {
+          const combinedTexts = responseData.texts.join("\n");
+          setEditedText(combinedTexts);
+        } else {
+          console.error("Error fetching data:", responseData.message);
+        }
+      } catch (error) {
+        console.error("Error fetching initial data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleEditClick = () => {
-    const newParagraph = prompt("Masukkan teks yang baru :"); // Menggunakan prompt sebagai contoh; bisa diganti dengan input form
+    const newParagraph = prompt("Masukkan teks yang baru :");
 
     if (newParagraph !== null) {
-      // Jika pengguna memasukkan teks baru
-      setEditedText(newParagraph); // Update state dengan teks yang diubah
-      // Lakukan permintaan ke backend PHP untuk menyimpan teks baru ke database
-      fetch("editParagraf.php", {
+      setEditedText(newParagraph);
+      fetch("http://localhost/personal-website/src/components/About/editParagraf.php", {
         method: "POST",
-        body: JSON.stringify({ newText: newParagraph }), // Kirim data teks baru ke PHP
         headers: {
           "Content-Type": "application/json",
         },
+        body: JSON.stringify({ newText: newParagraph }),
+        mode: "no-cors",
       })
-        .then((response) => response.json())
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
         .then((data) => {
-          // Handle respons dari PHP (jika ada)
-          console.log(data); // Tindakan lanjutan bisa ditambahkan di sini
+          if (data.status === "success") {
+            console.log("Teks berhasil diubah :", data.text);
+          } else {
+            throw new Error(data.message || "Failed to update data");
+          }
         })
         .catch((error) => {
           console.error("Error:", error);
@@ -39,9 +78,8 @@ export const About = () => {
             <div className={styles.aboutItemText}>
               <h3>Hello</h3>
               <p>
-                {editedText
-                  ? editedText
-                  : "Saya Laily Aulia Rahmi, mahasiswa Informatika yang sedang menempuh pendidikan di Universitas Muhammadiyah Malang. Saya sangat senang bisa berbagi sedikit cerita tentang diri saya, minat saya, dan perjalanan pendidikan saya. Selamat datang di halaman saya!"}
+                {editedText ||
+                  "Saya Laily, mahasiswa Informatika yang sedang menempuh pendidikan di Universitas Muhammadiyah Malang. Saya sangat senang bisa berbagi sedikit cerita tentang diri saya, minat saya, dan perjalanan pendidikan saya. Selamat datang di halaman saya, di mana saya berbagi perjalanan saya dalam menjelajahi dunia informatika!"}
               </p>
               <button className={styles.editBtn} onClick={handleEditClick}>
                 Edit text
