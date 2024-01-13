@@ -18,7 +18,7 @@ if ($conn->connect_error) {
 
 // Fungsi untuk mendapatkan teks dari database
 function getTextFromDatabase($conn) {
-    $sql = "SELECT deskripsi FROM users"; // Ubah id dan nama_tabel sesuai kebutuhan
+    $sql = "SELECT deskripsi FROM users"; 
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
@@ -38,7 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $newText = $conn->real_escape_string($data->newText);
 
         // Memperbarui teks di database
-        $sql = "UPDATE users SET deskripsi = ? WHERE id = 1"; // Ubah id dan nama_tabel sesuai kebutuhan
+        $sql = "UPDATE users SET deskripsi = ? WHERE id = 1"; 
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("s", $newText);
 
@@ -58,7 +58,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         echo json_encode($response);
     }
 
-    $sql = "SELECT deskripsi FROM users"; // Change table and column names as needed
+    $sql = "SELECT deskripsi FROM users"; 
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
@@ -82,7 +82,7 @@ if (isset($data->newText)) {
     $newText = $conn->real_escape_string($data->newText);
 
     // Memperbarui teks di database
-    $sql = "UPDATE users SET deskripsi = '$newText' WHERE id = 1"; // Ubah id dan nama_tabel sesuai kebutuhan
+    $sql = "UPDATE users SET deskripsi = '$newText' WHERE id = 1"; 
 
     if ($conn->query($sql) === TRUE) {
         $response = array("status" => "success", "message" => "Teks berhasil diperbarui");
